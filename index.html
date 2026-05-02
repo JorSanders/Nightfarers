@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nightfarer Stats — Elden Ring Nightreign</title>
+  <style>
+    :root {
+      --bg:         #090807;
+      --bg2:        #0e0d0b;
+      --bg3:        #141210;
+      --gold:       #c9a84c;
+      --gold-light: #e8c97a;
+      --gold-dim:   #6a5428;
+      --text:       #cec3a8;
+      --text-dim:   #6a6050;
+      --border:     #252018;
+      --border-hi:  #3a3020;
+      --pos:        #68b878;
+      --neg:        #c07272;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      font-size: 13px;
+      min-height: 100vh;
+    }
+
+    /* ── Header ─────────────────────────────────────── */
+    header {
+      background: linear-gradient(180deg, #080706 0%, #0d0b09 100%);
+      border-bottom: 1px solid var(--gold-dim);
+      padding: 22px 32px 18px;
+    }
+    header h1 {
+      font-size: 19px;
+      font-weight: 300;
+      color: var(--gold-light);
+      letter-spacing: 5px;
+      text-transform: uppercase;
+    }
+    header p {
+      color: var(--text-dim);
+      font-size: 10px;
+      margin-top: 5px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+    }
+
+    /* ── Controls ────────────────────────────────────── */
+    .controls {
+      padding: 14px 32px;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 28px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+    .ctl-group { display: flex; flex-direction: column; gap: 7px; }
+    .ctl-label {
+      font-size: 9px;
+      color: var(--gold-dim);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-weight: 700;
+    }
+    .ctl-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+
+    /* Pills */
+    .pill {
+      padding: 3px 10px;
+      border: 1px solid var(--border-hi);
+      background: transparent;
+      color: var(--text-dim);
+      border-radius: 2px;
+      cursor: pointer;
+      font-size: 11px;
+      font-family: inherit;
+      transition: all 0.1s;
+      user-select: none;
+    }
+    .pill.active { border-color: var(--gold-dim); color: var(--gold-light); background: #1a1408; }
+    .pill:hover { border-color: var(--gold-dim); color: var(--text); }
+    .pill.sm { font-size: 10px; padding: 2px 8px; color: var(--text-dim); }
+    .pill.sm:hover { color: var(--text); }
+
+    /* Select */
+    select {
+      background: var(--bg3);
+      border: 1px solid var(--border-hi);
+      color: var(--text);
+      padding: 3px 8px;
+      border-radius: 2px;
+      font-size: 11px;
+      cursor: pointer;
+      outline: none;
+      font-family: inherit;
+    }
+    select:focus { border-color: var(--gold-dim); }
+    select option { background: var(--bg3); }
+
+    /* ── Table ───────────────────────────────────────── */
+    .table-wrap { padding: 20px 32px 48px; overflow-x: auto; }
+
+    table { border-collapse: collapse; width: 100%; border: 1px solid var(--border); }
+
+    /* Thead */
+    thead th {
+      background: #0b0a08;
+      color: var(--text-dim);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 10px 14px;
+      text-align: center;
+      border-bottom: 1px solid var(--gold-dim);
+      white-space: nowrap;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    thead th.sortable {
+      cursor: pointer;
+      min-width: 58px;
+      transition: background 0.1s, color 0.1s;
+    }
+    thead th.sortable:hover { background: #131109; color: var(--gold); }
+    thead th.sortable.sorted { color: var(--gold-light); background: #131108; }
+    thead th.sortable.sorted::after { display: inline-block; margin-left: 3px; font-size: 8px; }
+    thead th.sortable.sorted.asc::after  { content: '▲'; }
+    thead th.sortable.sorted.desc::after { content: '▼'; }
+    thead th:first-child { text-align: left; min-width: 90px; }
+    thead th:nth-child(2) { text-align: left; min-width: 170px; }
+
+    /* Rows */
+    tbody tr:hover > td { filter: brightness(1.18); }
+
+    /* Char group alternating bg */
+    .ge .rb > td, .ge .r2 > td { background: #0c0b09; }
+    .ge .r1 > td, .ge .r3 > td { background: #0a0908; }
+    .go .rb > td, .go .r2 > td { background: #101009; }
+    .go .r1 > td, .go .r3 > td { background: #0e0d08; }
+
+    /* Group bottom border */
+    .group-end > td { border-bottom: 1px solid var(--border-hi) !important; }
+
+    /* Cells */
+    td {
+      padding: 5px 14px;
+      text-align: center;
+      border-right: 1px solid #181612;
+      vertical-align: middle;
+    }
+    td:last-child { border-right: none; }
+
+    /* Sorted column tint */
+    td.sc { background: rgba(201, 168, 76, 0.05) !important; }
+
+    /* Character name */
+    .cn {
+      text-align: left !important;
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--gold-light);
+      letter-spacing: 0.5px;
+      border-left: 2px solid var(--gold-dim);
+      padding: 5px 14px 5px 12px;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    /* Row label */
+    .rl {
+      text-align: left !important;
+      font-size: 11px;
+      color: var(--text-dim);
+      white-space: nowrap;
+    }
+    .rb .rl { color: var(--text); font-weight: 500; }
+    .r3 .rl { color: var(--gold); font-weight: 500; }
+
+    /* Stat value + delta */
+    .sv { font-variant-numeric: tabular-nums; font-size: 13px; }
+    .dv { font-size: 9px; font-weight: 700; margin-left: 1px; vertical-align: super; }
+    .vp { color: #90d4a0; }
+    .vn { color: #d09090; }
+    .dp { color: var(--pos); }
+    .dn { color: var(--neg); }
+
+    /* No results */
+    .empty { padding: 52px; text-align: center; color: var(--text-dim); letter-spacing: 2px; font-size: 11px; }
+
+    footer {
+      padding: 14px 32px;
+      border-top: 1px solid var(--border);
+      color: var(--text-dim);
+      font-size: 10px;
+      letter-spacing: 1px;
+    }
+
+    /* ── Charts ──────────────────────────────────────── */
+    .charts-section {
+      padding: 20px 32px 24px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    @media (max-width: 900px) { .charts-section { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 500px) { .charts-section { grid-template-columns: 1fr; } }
+
+    .chart-box {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      padding: 11px 12px 9px;
+    }
+    .chart-box.chart-sorted { border-color: var(--gold-dim); }
+
+    .chart-title {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-bottom: 9px;
+    }
+    .chart-box.chart-sorted .chart-title { color: var(--gold-light); }
+
+    .chart-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 3px;
+    }
+    .chart-name {
+      font-size: 10px;
+      color: var(--text-dim);
+      width: 68px;
+      flex-shrink: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .chart-track {
+      flex: 1;
+      height: 11px;
+      background: var(--bg3);
+      position: relative;
+      border-radius: 1px;
+      overflow: hidden;
+    }
+    .chart-seg {
+      position: absolute;
+      top: 0;
+      height: 100%;
+    }
+    .chart-seg-base  { background: #4a3e1a; }
+    .chart-seg-pos   { background: #386840; }
+    .chart-seg-neg   { background: #6a3030; }
+    .chart-tick {
+      position: absolute;
+      top: 0;
+      width: 1px;
+      height: 100%;
+      background: rgba(201,168,76,0.55);
+    }
+    .chart-val {
+      font-size: 10px;
+      font-variant-numeric: tabular-nums;
+      color: var(--text);
+      width: 22px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Nightfarer Stats</h1>
+  <p>Elden Ring Nightreign &nbsp;·&nbsp; Level 15 Stat Reference</p>
+</header>
+
+<div class="controls">
+  <div class="ctl-group">
+    <div class="ctl-label">Characters</div>
+    <div class="ctl-row">
+      <button class="pill sm" id="btnAll" onclick="toggleAll()">Deselect All</button>
+      <div id="charFilters" style="display:flex;gap:5px;flex-wrap:wrap;"></div>
+    </div>
+  </div>
+</div>
+
+<div class="charts-section" id="chartsSection"></div>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Character</th>
+        <th>Relic Setup</th>
+        <th class="sortable" data-s="VIG"  onclick="onStatClick('VIG')">VIG</th>
+        <th class="sortable" data-s="MND"  onclick="onStatClick('MND')">MND</th>
+        <th class="sortable" data-s="END"  onclick="onStatClick('END')">END</th>
+        <th class="sortable" data-s="STR"  onclick="onStatClick('STR')">STR</th>
+        <th class="sortable" data-s="DEX"  onclick="onStatClick('DEX')">DEX</th>
+        <th class="sortable" data-s="INT"  onclick="onStatClick('INT')">INT</th>
+        <th class="sortable" data-s="FAI"  onclick="onStatClick('FAI')">FAI</th>
+        <th class="sortable" data-s="ARC"  onclick="onStatClick('ARC')">ARC</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+</div>
+
+<footer>Click stat headers to sort all rows independently &nbsp;·&nbsp; Click character names to filter &nbsp;·&nbsp; Deltas shown as superscript on relic rows</footer>
+
+<script>
+const STATS = ['VIG','MND','END','STR','DEX','INT','FAI','ARC'];
+
+const DATA = [
+  {
+    name: "Wylder",
+    base: { VIG:52, MND:19, END:27, STR:50, DEX:40, INT:15, FAI:15, ARC:10 },
+    relics: [
+      { label:"+INT/FAI −STR/DEX", VIG:0,  MND:0,   END:0, STR:-7,  DEX:-5,  INT:15,  FAI:15,  ARC:0  },
+      { label:"+MND −VIG",         VIG:-5, MND:10,  END:0, STR:0,   DEX:0,   INT:0,   FAI:0,   ARC:0  }
+    ]
+  },
+  {
+    name: "Guardian",
+    base: { VIG:60, MND:14, END:38, STR:41, DEX:31, INT:10, FAI:21, ARC:10 },
+    relics: [
+      { label:"+MND/FAI −VIG",  VIG:-6, MND:8,  END:0, STR:0,  DEX:0,  INT:0,  FAI:17, ARC:0 },
+      { label:"+STR/DEX −VIG",  VIG:-8, MND:0,  END:0, STR:9,  DEX:19, INT:0,  FAI:0,  ARC:0 }
+    ]
+  },
+  {
+    name: "Duchess",
+    base: { VIG:39, MND:27, END:18, STR:11, DEX:45, INT:42, FAI:27, ARC:11 },
+    relics: [
+      { label:"+MND/FAI −INT",  VIG:0,  MND:3,   END:0, STR:0,  DEX:0,  INT:-5,  FAI:13, ARC:0 },
+      { label:"+VIG/STR −MND",  VIG:3,  MND:-14, END:0, STR:24, DEX:0,  INT:0,   FAI:0,  ARC:0 }
+    ]
+  },
+  {
+    name: "Recluse",
+    base: { VIG:33, MND:30, END:23, STR:12, DEX:19, INT:51, FAI:51, ARC:10 },
+    relics: [
+      { label:"+INT/FAI −MND",         VIG:0,  MND:-13, END:0, STR:0,  DEX:0,   INT:12,  FAI:12,  ARC:0  },
+      { label:"+VIG/END/DEX −INT/FAI", VIG:4,  MND:0,   END:5, STR:0,  DEX:20,  INT:-10, FAI:-10, ARC:0  }
+    ]
+  },
+  {
+    name: "Ironeye",
+    base: { VIG:37, MND:14, END:28, STR:19, DEX:57, INT:7, FAI:13, ARC:13 },
+    relics: [
+      { label:"+ARC −DEX",     VIG:0, MND:0, END:0, STR:0,  DEX:-9,  INT:0, FAI:0, ARC:15 },
+      { label:"+VIG/STR −DEX", VIG:5, MND:0, END:0, STR:20, DEX:-13, INT:0, FAI:0, ARC:0  }
+    ]
+  },
+  {
+    name: "Raider",
+    base: { VIG:56, MND:10, END:37, STR:68, DEX:19, INT:3, FAI:12, ARC:10 },
+    relics: [
+      { label:"+ARC −VIG",          VIG:-4, MND:0, END:0,  STR:0, DEX:0, INT:0,  FAI:0, ARC:17 },
+      { label:"+MND/INT −VIG/END",  VIG:-8, MND:9, END:-4, STR:0, DEX:0, INT:35, FAI:0, ARC:0  }
+    ]
+  },
+  {
+    name: "Executor",
+    base: { VIG:46, MND:11, END:27, STR:25, DEX:63, INT:8, FAI:6, ARC:28 },
+    relics: [
+      { label:"+DEX/ARC −VIG", VIG:-7, MND:0, END:0, STR:0, DEX:9,  INT:0, FAI:0, ARC:12  },
+      { label:"+VIG/END −ARC", VIG:5,  MND:0, END:6, STR:0, DEX:0,  INT:0, FAI:0, ARC:-13 }
+    ]
+  },
+  {
+    name: "Revenant",
+    base: { VIG:34, MND:31, END:17, STR:21, DEX:21, INT:30, FAI:51, ARC:12 },
+    relics: [
+      { label:"+STR −FAI",     VIG:0, MND:0,   END:0, STR:25, DEX:0, INT:0, FAI:-6, ARC:0 },
+      { label:"+VIG/END −MND", VIG:5, MND:-11, END:5, STR:0,  DEX:0, INT:0, FAI:0,  ARC:0 }
+    ]
+  },
+  {
+    name: "Scholar",
+    base: { VIG:41, MND:20, END:25, STR:14, DEX:18, INT:28, FAI:15, ARC:50 },
+    relics: [
+      { label:"+END/DEX −INT/ARC", VIG:0,  MND:0, END:6, STR:0, DEX:40, INT:-4, FAI:0, ARC:-20 },
+      { label:"+MND −VIG",         VIG:-3, MND:9, END:0, STR:0, DEX:0,  INT:0,  FAI:0, ARC:0   }
+    ]
+  },
+  {
+    name: "Undertaker",
+    base: { VIG:48, MND:14, END:22, STR:50, DEX:13, INT:5, FAI:41, ARC:10 },
+    relics: [
+      { label:"+DEX −VIG/FAI",  VIG:-5, MND:0, END:0, STR:0,   DEX:19, INT:0, FAI:-13, ARC:0 },
+      { label:"+MND/FAI −STR",  VIG:0,  MND:9, END:0, STR:-15, DEX:0,  INT:0, FAI:12,  ARC:0 }
+    ]
+  }
+];
+
+// ── State ────────────────────────────────────────────
+let active  = new Set(DATA.map(c => c.name));
+let sortStat = null;
+let sortDir  = 'desc';
+
+// ── Build flat rows ───────────────────────────────────
+function buildRows() {
+  const rows = [];
+  DATA.filter(c => active.has(c.name)).forEach(char => {
+    const b  = char.base;
+    const r1 = char.relics[0];
+    const r2 = char.relics[1];
+    const bothDelta = {};
+    const relic1 = {}, relic2 = {}, both = {};
+    for (const s of STATS) {
+      relic1[s]    = b[s] + r1[s];
+      relic2[s]    = b[s] + r2[s];
+      both[s]      = b[s] + r1[s] + r2[s];
+      bothDelta[s] = r1[s] + r2[s];
+    }
+    rows.push({ char: char.name, type: 'rb', label: 'Base',        stats: b,      deltas: null });
+    rows.push({ char: char.name, type: 'r1', label: r1.label,      stats: relic1, deltas: r1 });
+    rows.push({ char: char.name, type: 'r2', label: r2.label,      stats: relic2, deltas: r2 });
+    rows.push({ char: char.name, type: 'r3', label: 'Both Relics', stats: both,   deltas: bothDelta });
+  });
+  return rows;
+}
+
+// ── Render helpers ────────────────────────────────────
+function cell(val, delta, isSorted) {
+  const sc = isSorted ? ' sc' : '';
+  if (delta === 0) return `<td class="${sc}"><span class="sv">${val}</span></td>`;
+  const pos = delta > 0;
+  return `<td class="${sc}"><span class="sv ${pos ? 'vp' : 'vn'}">${val}</span><span class="dv ${pos ? 'dp' : 'dn'}">${pos ? '+' : ''}${delta}</span></td>`;
+}
+
+// ── Charts render ─────────────────────────────────────
+function renderCharts() {
+  const chars = DATA.filter(c => active.has(c.name));
+
+  let html = '';
+  for (const stat of STATS) {
+    const items = chars.map(c => {
+      const base  = c.base[stat];
+      const r1    = base + c.relics[0][stat];
+      const r2    = base + c.relics[1][stat];
+      const delta = c.relics[0][stat] + c.relics[1][stat];
+      const both  = base + delta;
+      const best  = Math.max(base, r1, r2, both);
+      return { name: c.name, base, both, delta, best };
+    });
+    items.sort((a, b) => b.best - a.best);
+
+    const maxVal = items.length
+      ? Math.max(...items.map(i => i.best), 1)
+      : 1;
+
+    const isSelected = stat === sortStat;
+    html += `<div class="chart-box${isSelected ? ' chart-sorted' : ''}">`;
+    html += `<div class="chart-title">${stat}</div>`;
+
+    for (const item of items) {
+      const pct = v => ((Math.max(v, 0) / maxVal) * 100).toFixed(2);
+      const baseW  = pct(item.base);
+      const bestBonus = item.best - item.base;
+
+      let segs = `<div class="chart-seg chart-seg-base" style="left:0;width:${baseW}%"></div>`;
+      if (bestBonus > 0) {
+        segs += `<div class="chart-seg chart-seg-pos" style="left:${baseW}%;width:${(pct(item.best) - parseFloat(baseW)).toFixed(2)}%"></div>`;
+      }
+
+      html += `<div class="chart-row">`;
+      html += `<div class="chart-name">${item.name}</div>`;
+      html += `<div class="chart-track">${segs}</div>`;
+      html += `<div class="chart-val">${item.best}</div>`;
+      html += `</div>`;
+    }
+
+    if (!items.length) {
+      html += `<div style="color:var(--text-dim);font-size:10px;padding:4px 0">—</div>`;
+    }
+
+    html += `</div>`;
+  }
+
+  document.getElementById('chartsSection').innerHTML = html;
+}
+
+// ── Main render ───────────────────────────────────────
+function render() {
+  const tbody = document.getElementById('tbody');
+
+  let rows = buildRows();
+
+  if (sortStat) {
+    rows.sort((a, b) => {
+      const va = a.stats[sortStat];
+      const vb = b.stats[sortStat];
+      return sortDir === 'desc' ? vb - va : va - vb;
+    });
+  }
+
+  if (!rows.length) {
+    tbody.innerHTML = `<tr><td colspan="10" class="empty">No characters selected</td></tr>`;
+    syncHeaders();
+    renderCharts();
+    return;
+  }
+
+  // Assign alternating group colors per consecutive character block
+  let prevChar = null, groupEven = false;
+  let html = '';
+  rows.forEach((row, i) => {
+    if (row.char !== prevChar) { groupEven = !groupEven; prevChar = row.char; }
+    const isEnd = i === rows.length - 1 || rows[i + 1].char !== row.char;
+    const g = groupEven ? 'ge' : 'go';
+    const end = isEnd ? ' group-end' : '';
+
+    html += `<tr class="${g} ${row.type}${end}">`;
+    html += `<td class="cn">${row.char}</td>`;
+    html += `<td class="rl">${row.label}</td>`;
+    for (const s of STATS) {
+      const d = row.deltas ? row.deltas[s] : 0;
+      html += cell(row.stats[s], d, s === sortStat);
+    }
+    html += `</tr>`;
+  });
+
+  tbody.innerHTML = html;
+  syncHeaders();
+  renderCharts();
+}
+
+function syncHeaders() {
+  document.querySelectorAll('thead th.sortable').forEach(th => {
+    th.classList.remove('sorted', 'asc', 'desc');
+    if (th.dataset.s === sortStat) th.classList.add('sorted', sortDir);
+  });
+}
+
+// ── Event handlers ────────────────────────────────────
+function onStatClick(stat) {
+  if (sortStat === stat && sortDir === 'asc') {
+    sortStat = null;
+    sortDir  = 'desc';
+  } else if (sortStat === stat) {
+    sortDir = 'asc';
+  } else {
+    sortStat = stat;
+    sortDir  = 'desc';
+  }
+  render();
+}
+
+function toggleAll() {
+  const allOn = active.size === DATA.length;
+  if (allOn) {
+    active.clear();
+    document.getElementById('btnAll').textContent = 'Select All';
+  } else {
+    DATA.forEach(c => active.add(c.name));
+    document.getElementById('btnAll').textContent = 'Deselect All';
+  }
+  document.querySelectorAll('.pill[data-n]').forEach(p => {
+    p.classList.toggle('active', active.has(p.dataset.n));
+  });
+  render();
+}
+
+// ── Init ─────────────────────────────────────────────
+function init() {
+  const cf = document.getElementById('charFilters');
+  DATA.forEach(char => {
+    const btn = document.createElement('button');
+    btn.className = 'pill active';
+    btn.textContent = char.name;
+    btn.dataset.n = char.name;
+    btn.onclick = () => {
+      if (active.has(char.name)) {
+        active.delete(char.name);
+        btn.classList.remove('active');
+      } else {
+        active.add(char.name);
+        btn.classList.add('active');
+      }
+      const all = active.size === DATA.length;
+      document.getElementById('btnAll').textContent = all ? 'Deselect All' : 'Select All';
+      render();
+    };
+    cf.appendChild(btn);
+  });
+  render();
+}
+
+init();
+</script>
+</body>
+</html>
