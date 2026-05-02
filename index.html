@@ -305,14 +305,14 @@
       <tr>
         <th>Character</th>
         <th>Relic Setup</th>
-        <th class="sortable" data-s="VIG"  onclick="onStatClick('VIG')">VIG</th>
-        <th class="sortable" data-s="MND"  onclick="onStatClick('MND')">MND</th>
-        <th class="sortable" data-s="END"  onclick="onStatClick('END')">END</th>
-        <th class="sortable" data-s="STR"  onclick="onStatClick('STR')">STR</th>
         <th class="sortable" data-s="DEX"  onclick="onStatClick('DEX')">DEX</th>
+        <th class="sortable" data-s="STR"  onclick="onStatClick('STR')">STR</th>
         <th class="sortable" data-s="INT"  onclick="onStatClick('INT')">INT</th>
         <th class="sortable" data-s="FAI"  onclick="onStatClick('FAI')">FAI</th>
         <th class="sortable" data-s="ARC"  onclick="onStatClick('ARC')">ARC</th>
+        <th class="sortable" data-s="VIG"  onclick="onStatClick('VIG')">VIG</th>
+        <th class="sortable" data-s="END"  onclick="onStatClick('END')">END</th>
+        <th class="sortable" data-s="MND"  onclick="onStatClick('MND')">MND</th>
       </tr>
     </thead>
     <tbody id="tbody"></tbody>
@@ -322,7 +322,7 @@
 <footer>Click stat headers to sort all rows independently &nbsp;·&nbsp; Click character names to filter &nbsp;·&nbsp; Deltas shown as superscript on relic rows</footer>
 
 <script>
-const STATS = ['VIG','MND','END','STR','DEX','INT','FAI','ARC'];
+const STATS = ['DEX','STR','INT','FAI','ARC','VIG','END','MND'];
 
 const DATA = [
   {
