@@ -71,6 +71,10 @@
       outline: 2px solid var(--gold);
       outline-offset: 2px;
     }
+    thead th:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--gold);
+    }
 
     /* ── Header ─────────────────────────────────────── */
     header {
@@ -352,14 +356,14 @@
       <tr>
         <th scope="col">Character</th>
         <th scope="col">Relic Setup</th>
-        <th scope="col" class="sortable" data-s="DEX" onclick="onStatClick('DEX')">DEX</th>
-        <th scope="col" class="sortable" data-s="STR" onclick="onStatClick('STR')">STR</th>
-        <th scope="col" class="sortable" data-s="INT" onclick="onStatClick('INT')">INT</th>
-        <th scope="col" class="sortable" data-s="FAI" onclick="onStatClick('FAI')">FAI</th>
-        <th scope="col" class="sortable" data-s="ARC" onclick="onStatClick('ARC')">ARC</th>
-        <th scope="col" class="sortable" data-s="VIG" onclick="onStatClick('VIG')">VIG</th>
-        <th scope="col" class="sortable" data-s="END" onclick="onStatClick('END')">END</th>
-        <th scope="col" class="sortable" data-s="MND" onclick="onStatClick('MND')">MND</th>
+        <th scope="col" class="sortable" data-s="DEX" onclick="onStatClick('DEX')" tabindex="0" role="columnheader" onkeydown="onStatKeydown(event,'DEX')">DEX</th>
+        <th scope="col" class="sortable" data-s="STR" onclick="onStatClick('STR')" tabindex="0" role="columnheader" onkeydown="onStatKeydown(event,'STR')">STR</th>
+        <th scope="col" class="sortable" data-s="INT" onclick="onStatClick('INT')" tabindex="0" role="columnheader" onkeydown="onStatKeydown(event,'INT')">INT</th>
+        <th scope="col" class="sortable" data-s="FAI" onclick="onStatClick('FAI')" tabindex="0" role="columnheader" onkeydown="onStatKeydown(event,'FAI')">FAI</th>
+        <th scope="col" class="sortable" data-s="ARC" onclick="onStatClick('ARC')" tabindex="0" role="columnheader" onkeydown="onStatKeydown(event,'ARC')">ARC</th>
+        <th scope="col" class="sortable" data-s="VIG" onclick="onStatClick('VIG')" tabindex="0" role="columnheader" onkeydown="onStatKeydown(event,'VIG')">VIG</th>
+        <th scope="col" class="sortable" data-s="END" onclick="onStatClick('END')" tabindex="0" role="columnheader" onkeydown="onStatKeydown(event,'END')">END</th>
+        <th scope="col" class="sortable" data-s="MND" onclick="onStatClick('MND')" tabindex="0" role="columnheader" onkeydown="onStatKeydown(event,'MND')">MND</th>
       </tr>
     </thead>
     <tbody id="tbody"></tbody>
@@ -587,6 +591,10 @@ function render() {
   tbody.innerHTML = html;
   syncHeaders();
   renderCharts();
+}
+
+function onStatKeydown(e, stat) {
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onStatClick(stat); }
 }
 
 function syncHeaders() {
