@@ -110,7 +110,7 @@
     .ctl-group { display: flex; flex-direction: column; gap: 7px; }
     .ctl-label {
       font-size: 10px;
-      color: var(--gold-dim);
+      color: var(--gold);
       text-transform: uppercase;
       letter-spacing: 2px;
       font-weight: 700;
@@ -337,6 +337,7 @@
   <p>Elden Ring Nightreign &nbsp;·&nbsp; Level 15 Stat Reference</p>
 </header>
 
+<main>
 <div class="controls" role="group" aria-label="Character filters">
   <div class="ctl-group">
     <p class="ctl-label" id="charFiltersLabel">Characters</p>
@@ -373,6 +374,8 @@
 <footer>
   <span aria-hidden="true">Click stat headers to sort &nbsp;·&nbsp; Click again to reverse &nbsp;·&nbsp; Click once more to clear &nbsp;·&nbsp; Toggle characters above to filter</span>
 </footer>
+
+</main>
 
 <div aria-live="polite" aria-atomic="true" class="sr-only" id="sortStatus"></div>
 
