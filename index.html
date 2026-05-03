@@ -3,7 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nightfarer Stats — Elden Ring Nightreign</title>
+  <title>Nightfarer Stats — Elden Ring Nightreign Level 15 Reference</title>
+  <meta name="description" content="Interactive stat reference for all 10 Nightfarers in Elden Ring Nightreign. Compare base stats and relic setups at level 15 for DEX, STR, INT, FAI, ARC, VIG, END and MND.">
+  <meta name="theme-color" content="#090807">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Nightfarer Stats — Elden Ring Nightreign">
+  <meta property="og:description" content="Interactive stat reference for all 10 Nightfarers in Elden Ring Nightreign. Compare base stats and relic setups at level 15.">
+  <link rel="canonical" href="https://nightfarers.jor.dev/">
   <style>
     :root {
       --bg:         #090807;
@@ -13,7 +19,7 @@
       --gold-light: #e8c97a;
       --gold-dim:   #6a5428;
       --text:       #cec3a8;
-      --text-dim:   #6a6050;
+      --text-dim:   #857a68;
       --border:     #252018;
       --border-hi:  #3a3020;
       --pos:        #68b878;
@@ -28,6 +34,42 @@
       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       font-size: 13px;
       min-height: 100vh;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ── Skip link ───────────────────────────────────── */
+    .skip-link {
+      position: absolute;
+      top: -100%;
+      left: 16px;
+      padding: 8px 16px;
+      background: var(--gold);
+      color: #000;
+      font-weight: 700;
+      font-size: 13px;
+      border-radius: 2px;
+      z-index: 100;
+      text-decoration: none;
+    }
+    .skip-link:focus { top: 8px; }
+
+    /* ── Screen-reader only ──────────────────────────── */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* ── Focus styles ────────────────────────────────── */
+    :focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 2px;
     }
 
     /* ── Header ─────────────────────────────────────── */
@@ -45,7 +87,7 @@
     }
     header p {
       color: var(--text-dim);
-      font-size: 10px;
+      font-size: 11px;
       margin-top: 5px;
       letter-spacing: 2.5px;
       text-transform: uppercase;
@@ -63,7 +105,7 @@
     }
     .ctl-group { display: flex; flex-direction: column; gap: 7px; }
     .ctl-label {
-      font-size: 9px;
+      font-size: 10px;
       color: var(--gold-dim);
       text-transform: uppercase;
       letter-spacing: 2px;
@@ -73,39 +115,33 @@
 
     /* Pills */
     .pill {
-      padding: 3px 10px;
+      padding: 6px 12px;
       border: 1px solid var(--border-hi);
       background: transparent;
       color: var(--text-dim);
       border-radius: 2px;
       cursor: pointer;
-      font-size: 11px;
+      font-size: 12px;
       font-family: inherit;
       transition: all 0.1s;
       user-select: none;
+      min-height: 32px;
+      line-height: 1;
     }
     .pill.active { border-color: var(--gold-dim); color: var(--gold-light); background: #1a1408; }
-    .pill:hover { border-color: var(--gold-dim); color: var(--text); }
-    .pill.sm { font-size: 10px; padding: 2px 8px; color: var(--text-dim); }
-    .pill.sm:hover { color: var(--text); }
-
-    /* Select */
-    select {
-      background: var(--bg3);
-      border: 1px solid var(--border-hi);
-      color: var(--text);
-      padding: 3px 8px;
-      border-radius: 2px;
-      font-size: 11px;
-      cursor: pointer;
-      outline: none;
-      font-family: inherit;
-    }
-    select:focus { border-color: var(--gold-dim); }
-    select option { background: var(--bg3); }
+    .pill:hover  { border-color: var(--gold-dim); color: var(--text); }
 
     /* ── Table ───────────────────────────────────────── */
-    .table-wrap { padding: 20px 32px 48px; overflow-x: auto; }
+    .table-wrap {
+      padding: 20px 32px 48px;
+      overflow-x: auto;
+      /* scroll shadow hint */
+      background:
+        linear-gradient(to right, var(--bg) 0%, transparent 32px) left / 32px 100% no-repeat,
+        linear-gradient(to left,  var(--bg) 0%, transparent 32px) right/ 32px 100% no-repeat,
+        linear-gradient(to right, rgba(0,0,0,0.4) 0%, transparent 24px) left / 24px 100% scroll no-repeat,
+        linear-gradient(to left,  rgba(0,0,0,0.4) 0%, transparent 24px) right/ 24px 100% scroll no-repeat;
+    }
 
     table { border-collapse: collapse; width: 100%; border: 1px solid var(--border); }
 
@@ -113,7 +149,7 @@
     thead th {
       background: #0b0a08;
       color: var(--text-dim);
-      font-size: 9px;
+      font-size: 10px;
       font-weight: 700;
       letter-spacing: 2px;
       text-transform: uppercase;
@@ -200,7 +236,7 @@
       padding: 14px 32px;
       border-top: 1px solid var(--border);
       color: var(--text-dim);
-      font-size: 10px;
+      font-size: 11px;
       letter-spacing: 1px;
     }
 
@@ -212,8 +248,6 @@
       gap: 14px;
       border-bottom: 1px solid var(--border);
     }
-    @media (max-width: 900px) { .charts-section { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 500px) { .charts-section { grid-template-columns: 1fr; } }
 
     .chart-box {
       background: var(--bg2);
@@ -223,7 +257,7 @@
     .chart-box.chart-sorted { border-color: var(--gold-dim); }
 
     .chart-title {
-      font-size: 9px;
+      font-size: 10px;
       font-weight: 700;
       letter-spacing: 2.5px;
       color: var(--text-dim);
@@ -260,9 +294,8 @@
       top: 0;
       height: 100%;
     }
-    .chart-seg-base  { background: #4a3e1a; }
-    .chart-seg-pos   { background: #386840; }
-    .chart-seg-neg   { background: #6a3030; }
+    .chart-seg-base { background: #4a3e1a; }
+    .chart-seg-pos  { background: #386840; }
     .chart-tick {
       position: absolute;
       top: 0;
@@ -278,48 +311,66 @@
       text-align: right;
       flex-shrink: 0;
     }
+
+    /* ── Responsive ──────────────────────────────────── */
+    @media (max-width: 900px) {
+      .charts-section { grid-template-columns: repeat(2, 1fr); }
+      header, .controls, .table-wrap, footer { padding-left: 16px; padding-right: 16px; }
+      .charts-section { padding-left: 16px; padding-right: 16px; }
+    }
+    @media (max-width: 500px) {
+      .charts-section { grid-template-columns: 1fr; }
+      header h1 { font-size: 15px; letter-spacing: 3px; }
+    }
   </style>
 </head>
 <body>
+
+<a href="#main-table" class="skip-link">Skip to stat table</a>
 
 <header>
   <h1>Nightfarer Stats</h1>
   <p>Elden Ring Nightreign &nbsp;·&nbsp; Level 15 Stat Reference</p>
 </header>
 
-<div class="controls">
+<div class="controls" role="group" aria-label="Character filters">
   <div class="ctl-group">
-    <div class="ctl-label">Characters</div>
-    <div class="ctl-row">
-      <button class="pill sm" id="btnAll" onclick="toggleAll()">Deselect All</button>
+    <p class="ctl-label" id="charFiltersLabel">Characters</p>
+    <div class="ctl-row" role="group" aria-labelledby="charFiltersLabel">
+      <button class="pill" id="btnAll" onclick="toggleAll()" aria-pressed="false">Deselect All</button>
       <div id="charFilters" style="display:flex;gap:5px;flex-wrap:wrap;"></div>
     </div>
   </div>
 </div>
 
-<div class="charts-section" id="chartsSection"></div>
+<div class="charts-section" id="chartsSection" aria-label="Stat bar charts" role="img"></div>
 
 <div class="table-wrap">
-  <table>
+  <table id="main-table">
+    <caption class="sr-only">Nightfarer stats at level 15, showing base values and relic bonuses for each character</caption>
     <thead>
       <tr>
-        <th>Character</th>
-        <th>Relic Setup</th>
-        <th class="sortable" data-s="DEX"  onclick="onStatClick('DEX')">DEX</th>
-        <th class="sortable" data-s="STR"  onclick="onStatClick('STR')">STR</th>
-        <th class="sortable" data-s="INT"  onclick="onStatClick('INT')">INT</th>
-        <th class="sortable" data-s="FAI"  onclick="onStatClick('FAI')">FAI</th>
-        <th class="sortable" data-s="ARC"  onclick="onStatClick('ARC')">ARC</th>
-        <th class="sortable" data-s="VIG"  onclick="onStatClick('VIG')">VIG</th>
-        <th class="sortable" data-s="END"  onclick="onStatClick('END')">END</th>
-        <th class="sortable" data-s="MND"  onclick="onStatClick('MND')">MND</th>
+        <th scope="col">Character</th>
+        <th scope="col">Relic Setup</th>
+        <th scope="col" class="sortable" data-s="DEX" onclick="onStatClick('DEX')">DEX</th>
+        <th scope="col" class="sortable" data-s="STR" onclick="onStatClick('STR')">STR</th>
+        <th scope="col" class="sortable" data-s="INT" onclick="onStatClick('INT')">INT</th>
+        <th scope="col" class="sortable" data-s="FAI" onclick="onStatClick('FAI')">FAI</th>
+        <th scope="col" class="sortable" data-s="ARC" onclick="onStatClick('ARC')">ARC</th>
+        <th scope="col" class="sortable" data-s="VIG" onclick="onStatClick('VIG')">VIG</th>
+        <th scope="col" class="sortable" data-s="END" onclick="onStatClick('END')">END</th>
+        <th scope="col" class="sortable" data-s="MND" onclick="onStatClick('MND')">MND</th>
       </tr>
     </thead>
     <tbody id="tbody"></tbody>
   </table>
 </div>
 
-<footer>Click stat headers to sort all rows independently &nbsp;·&nbsp; Click character names to filter &nbsp;·&nbsp; Deltas shown as superscript on relic rows</footer>
+<footer>
+  <span aria-hidden="true">Click stat headers to sort &nbsp;·&nbsp; Click again to reverse &nbsp;·&nbsp; Click once more to clear &nbsp;·&nbsp; Toggle characters above to filter</span>
+</footer>
+
+<div aria-live="polite" aria-atomic="true" class="sr-only" id="sortStatus"></div>
 
 <script>
 const STATS = ['DEX','STR','INT','FAI','ARC','VIG','END','MND'];
@@ -440,7 +491,8 @@ function cell(val, delta, isSorted) {
   const sc = isSorted ? ' sc' : '';
   if (delta === 0) return `<td class="${sc}"><span class="sv">${val}</span></td>`;
   const pos = delta > 0;
-  return `<td class="${sc}"><span class="sv ${pos ? 'vp' : 'vn'}">${val}</span><span class="dv ${pos ? 'dp' : 'dn'}">${pos ? '+' : ''}${delta}</span></td>`;
+  const sign = pos ? '+' : '';
+  return `<td class="${sc}" aria-label="${val}, ${sign}${delta} from relics"><span class="sv ${pos ? 'vp' : 'vn'}" aria-hidden="true">${val}</span><span class="dv ${pos ? 'dp' : 'dn'}" aria-hidden="true">${sign}${delta}</span></td>`;
 }
 
 // ── Charts render ─────────────────────────────────────
@@ -460,17 +512,15 @@ function renderCharts() {
     });
     items.sort((a, b) => b.best - a.best);
 
-    const maxVal = items.length
-      ? Math.max(...items.map(i => i.best), 1)
-      : 1;
+    const maxVal = items.length ? Math.max(...items.map(i => i.best), 1) : 1;
 
     const isSelected = stat === sortStat;
     html += `<div class="chart-box${isSelected ? ' chart-sorted' : ''}">`;
-    html += `<div class="chart-title">${stat}</div>`;
+    html += `<div class="chart-title" aria-hidden="true">${stat}</div>`;
 
     for (const item of items) {
       const pct = v => ((Math.max(v, 0) / maxVal) * 100).toFixed(2);
-      const baseW  = pct(item.base);
+      const baseW     = pct(item.base);
       const bestBonus = item.best - item.base;
 
       let segs = `<div class="chart-seg chart-seg-base" style="left:0;width:${baseW}%"></div>`;
@@ -479,14 +529,14 @@ function renderCharts() {
       }
 
       html += `<div class="chart-row">`;
-      html += `<div class="chart-name">${item.name}</div>`;
-      html += `<div class="chart-track">${segs}</div>`;
-      html += `<div class="chart-val">${item.best}</div>`;
+      html += `<div class="chart-name" aria-hidden="true">${item.name}</div>`;
+      html += `<div class="chart-track" aria-hidden="true">${segs}</div>`;
+      html += `<div class="chart-val" aria-hidden="true">${item.best}</div>`;
       html += `</div>`;
     }
 
     if (!items.length) {
-      html += `<div style="color:var(--text-dim);font-size:10px;padding:4px 0">—</div>`;
+      html += `<div style="color:var(--text-dim);font-size:10px;padding:4px 0" aria-hidden="true">—</div>`;
     }
 
     html += `</div>`;
@@ -516,17 +566,16 @@ function render() {
     return;
   }
 
-  // Assign alternating group colors per consecutive character block
   let prevChar = null, groupEven = false;
   let html = '';
   rows.forEach((row, i) => {
     if (row.char !== prevChar) { groupEven = !groupEven; prevChar = row.char; }
     const isEnd = i === rows.length - 1 || rows[i + 1].char !== row.char;
-    const g = groupEven ? 'ge' : 'go';
+    const g   = groupEven ? 'ge' : 'go';
     const end = isEnd ? ' group-end' : '';
 
     html += `<tr class="${g} ${row.type}${end}">`;
-    html += `<td class="cn">${row.char}</td>`;
+    html += `<td class="cn" scope="row">${row.char}</td>`;
     html += `<td class="rl">${row.label}</td>`;
     for (const s of STATS) {
       const d = row.deltas ? row.deltas[s] : 0;
@@ -543,7 +592,11 @@ function render() {
 function syncHeaders() {
   document.querySelectorAll('thead th.sortable').forEach(th => {
     th.classList.remove('sorted', 'asc', 'desc');
-    if (th.dataset.s === sortStat) th.classList.add('sorted', sortDir);
+    th.removeAttribute('aria-sort');
+    if (th.dataset.s === sortStat) {
+      th.classList.add('sorted', sortDir);
+      th.setAttribute('aria-sort', sortDir === 'desc' ? 'descending' : 'ascending');
+    }
   });
 }
 
@@ -552,11 +605,14 @@ function onStatClick(stat) {
   if (sortStat === stat && sortDir === 'asc') {
     sortStat = null;
     sortDir  = 'desc';
+    document.getElementById('sortStatus').textContent = 'Sort cleared, showing default order';
   } else if (sortStat === stat) {
     sortDir = 'asc';
+    document.getElementById('sortStatus').textContent = `${stat} sorted ascending`;
   } else {
     sortStat = stat;
     sortDir  = 'desc';
+    document.getElementById('sortStatus').textContent = `${stat} sorted descending`;
   }
   render();
 }
@@ -566,12 +622,16 @@ function toggleAll() {
   if (allOn) {
     active.clear();
     document.getElementById('btnAll').textContent = 'Select All';
+    document.getElementById('btnAll').setAttribute('aria-pressed', 'true');
   } else {
     DATA.forEach(c => active.add(c.name));
     document.getElementById('btnAll').textContent = 'Deselect All';
+    document.getElementById('btnAll').setAttribute('aria-pressed', 'false');
   }
   document.querySelectorAll('.pill[data-n]').forEach(p => {
-    p.classList.toggle('active', active.has(p.dataset.n));
+    const on = active.has(p.dataset.n);
+    p.classList.toggle('active', on);
+    p.setAttribute('aria-pressed', String(on));
   });
   render();
 }
@@ -584,16 +644,21 @@ function init() {
     btn.className = 'pill active';
     btn.textContent = char.name;
     btn.dataset.n = char.name;
+    btn.setAttribute('aria-pressed', 'true');
     btn.onclick = () => {
-      if (active.has(char.name)) {
+      const on = active.has(char.name);
+      if (on) {
         active.delete(char.name);
         btn.classList.remove('active');
+        btn.setAttribute('aria-pressed', 'false');
       } else {
         active.add(char.name);
         btn.classList.add('active');
+        btn.setAttribute('aria-pressed', 'true');
       }
       const all = active.size === DATA.length;
       document.getElementById('btnAll').textContent = all ? 'Deselect All' : 'Select All';
+      document.getElementById('btnAll').setAttribute('aria-pressed', String(!all));
       render();
     };
     cf.appendChild(btn);
